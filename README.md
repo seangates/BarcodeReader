@@ -1,4 +1,4 @@
-# barcode-reader-ebay
+# barcode-reader
 A Marko JS widget using a pure JS barcode reader compatible with mobile browsers.
 
 ## Table of Contents
@@ -17,8 +17,3 @@ A Marko JS widget using a pure JS barcode reader compatible with mobile browsers
 
 ## Contacts
 {contact names, email addresses, slack channels, etc}
-
-## Resources
-- [Visual test](https://github.corp.ebay.com/pages/eBayUI/directory/components/barcode-reader/test-page.html)
-- [eBayUI Resources \(developer guidelines, generators, etc.\)](https://github.corp.ebay.com/pages/eBayUI/resources/)
-- [eBay Component Directory](https://github.corp.ebay.com/pages/eBayUI/directory/)
