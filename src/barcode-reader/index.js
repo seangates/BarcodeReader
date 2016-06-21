@@ -23,26 +23,25 @@ module.exports = require('marko-widgets').defineComponent({
     position: {},
 
     init: function () {
-        BarcodeReader.SetScanCanvasWidth(1280);
-        BarcodeReader.SetScanCanvasHeight(720);
+        var BarcodeReader = require('./barcode-reader');
 
-        BarcodeReader.Init();
-
-        BarcodeReader.StreamCallback = function (barCodes) {
-            if (barCodes.length > 0) {
-                this.stream.getTracks()[0].stop();
-                BarcodeReader.StopStreamDecode();
-                this.emit('readBarCodes', barCodes);
-                this.setState('streaming', false);
-                console.table(barCodes);
-            }
-        }.bind(this);
-
-        BarcodeReader.SetLocalizationCallback(function (localized) {
-            this.localized = localized;
-        }.bind(this));
-
-        BarcodeReader.SwitchLocalizationFeedback(true);
+        this.BarcodeReader = new BarcodeReader({
+            scanCanvasWidth: 1280,
+            scanCanvasHeight: 720,
+            localizationFeedback: true,
+            onLocalization: function (localized) {
+                this.localized = localized;
+            }.bind(this),
+            onScan: function (barCodes) {
+                if (barCodes.length > 0) {
+                    this.stream.getTracks()[0].stop();
+                    this.BarcodeReader.StopStreamDecode();
+                    this.emit('readBarCodes', barCodes);
+                    this.setState('streaming', false);
+                    console.table(barCodes);
+                }
+            }.bind(this)
+        });
     },
 
     draw: function () {
@@ -96,7 +95,7 @@ module.exports = require('marko-widgets').defineComponent({
                             console.log('video loaded', this.video.videoWidth, this.video.videoHeight);
                             this.video.play();
                             this.draw();
-                            BarcodeReader.DecodeStream(this.video);
+                            this.BarcodeReader.DecodeStream(this.video);
                         }.bind(this);
                     }.bind(this),
                     function (err) {
