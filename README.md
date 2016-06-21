@@ -1,4 +1,6 @@
 # barcode-reader
+
+[![Join the chat at https://gitter.im/seangates/BarcodeReader](https://badges.gitter.im/seangates/BarcodeReader.svg)](https://gitter.im/seangates/BarcodeReader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 A Marko JS widget using a pure JS barcode reader compatible with mobile browsers.
 
 ## Table of Contents
