@@ -15,12 +15,7 @@ module.exports = require('marko-widgets').defineComponent({
         };
     },
 
-    canvas: null,
-    ctx: null,
-    video: null,
     stream: null,
-    localized: [],
-    position: {},
 
     init: function () {
         var BarcodeReader = require('./barcode-reader');
@@ -28,10 +23,6 @@ module.exports = require('marko-widgets').defineComponent({
         this.BarcodeReader = new BarcodeReader({
             scanCanvasWidth: 1280,
             scanCanvasHeight: 720,
-            localizationFeedback: true,
-            onLocalization: function (localized) {
-                this.localized = localized;
-            }.bind(this),
             onScan: function (barCodes) {
                 if (barCodes.length > 0) {
                     this.stream.getTracks()[0].stop();
@@ -42,40 +33,13 @@ module.exports = require('marko-widgets').defineComponent({
                 }
             }.bind(this)
         });
+
+        this.on('startScanning', this.startScanning.bind(this));
     },
 
-    draw: function () {
-        var self = this;
-
-        try {
-            self.ctx.drawImage(self.video, 0, 0);
-
-            if (self.localized.length > 0) {
-                self.ctx.beginPath();
-                self.ctx.lineWIdth = '2';
-                self.ctx.strokeStyle = 'red';
-                self.localized.forEach(function (localizedItem) {
-                    self.ctx.rect(localizedItem.x, localizedItem.y, localizedItem.width, localizedItem.height);
-                }.bind(this));
-                self.ctx.stroke();
-            }
-
-            setTimeout(self.draw.bind(this), 20);
-        } catch (e) {
-            if (e.name === 'NS_ERROR_NOT_AVAILABLE') {
-                setTimeout(self.draw.bind(this), 20);
-            } else {
-                throw e;
-            }
-        }
-    },
-
-    initBarcodeReader: function () {
+    startScanning: function () {
         this.once('update', function () {
-            this.canvas = this.el.getElementsByTagName('canvas')[0];
-            this.ctx = this.canvas.getContext('2d');
-            this.video = document.createElement('video');
-
+            var video = this.getEl('video');
             var n = navigator;
 
             n.getUserMedia = (n.getUserMedia || n.webkitGetUserMedia || n.mozGetUserMedia || n.msGetUserMedia);
@@ -90,12 +54,11 @@ module.exports = require('marko-widgets').defineComponent({
                     },
                     function (localMediaStream) {
                         this.stream = localMediaStream;
-                        this.video.src = window.URL.createObjectURL(localMediaStream);
-                        this.video.onloadedmetadata = function (e) {
-                            console.log('video loaded', this.video.videoWidth, this.video.videoHeight);
-                            this.video.play();
-                            this.draw();
-                            this.BarcodeReader.DecodeStream(this.video);
+                        video.src = window.URL.createObjectURL(localMediaStream);
+                        video.onloadedmetadata = function (e) {
+                            console.log('video loaded', video.videoWidth, video.videoHeight);
+                            video.play();
+                            this.BarcodeReader.DecodeStream(video);
                         }.bind(this);
                     }.bind(this),
                     function (err) {
