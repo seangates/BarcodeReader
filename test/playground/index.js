@@ -20,7 +20,7 @@ lasso.configure({
 
 var app = express();
 app.use('/static', serveStatic(__dirname + '/static'));
-app.get('/barcode-reader-ebay', function handler(req, res) {
+app.get('/barcode-reader', function handler(req, res) {
   testPage.render({}, res);
 });
 
