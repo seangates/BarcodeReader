@@ -1,19 +1,25 @@
 .barcode-reader {
+    &:after {
+        background-color: rgba(255, 0, 0, .1);
+        border: 3px solid white;
+        content: '';
+        display: none;
+        height: 50vh;
+        left: 50%;
+        position: fixed;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(-1, 1);
+        width: 70vh;
+
+        .streaming& {
+            display: block;
+        }
+    }
+
     video {
         left: 50%;
         position: fixed;
         top: 50%;
         transform: translate(-50%, -50%) scale(-1, 1);
     }
-}
-
-.guide-lines {
-  border: 3px solid white;
-  width: 70vh;
-  background-color: rgba(255,0,0,0.1);
-  position: fixed;
-  transform: translate(-50%, -50%) scale(-1, 1);
-  left: 50%;
-  top: 50%;
-  height: 50vh;
 }

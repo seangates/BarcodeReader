@@ -10,17 +10,8 @@
 </head>
 <body>
     <h1>Test Page</h1>
-    <button onclick="$MARKO_WIDGETS.getWidgetForEl('w0').emit('startScanning')">Button</button>
-    <h2 id="result"></h2>
-    <barcode-reader />
+    <controller/>
     <lasso-body/>
-    <init-widgets immediate=true/>
-    <script>
-        var barcodeReader = $MARKO_WIDGETS.getWidgetForEl('w0');
-
-        barcodeReader.on('readBarCodes', function (barcode) {
-            document.getElementById('result').innerHTML = barcode[0].Format + ' : ' + barcode[0].Value;
-        });
-    </script>
+    <init-widgets/>
 </body>
 </html>

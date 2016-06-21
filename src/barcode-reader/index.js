@@ -18,6 +18,7 @@ module.exports = require('marko-widgets').defineComponent({
     stream: null,
 
     init: function () {
+        console.log('asdasd');
         var BarcodeReader = require('./barcode-reader');
 
         this.BarcodeReader = new BarcodeReader({
@@ -27,7 +28,7 @@ module.exports = require('marko-widgets').defineComponent({
                 if (barCodes.length > 0) {
                     this.stream.getTracks()[0].stop();
                     this.BarcodeReader.StopStreamDecode();
-                    this.emit('readBarCodes', barCodes);
+                    this.emit('readBarCode', barCodes[0]);
                     this.setState('streaming', false);
                     console.table(barCodes);
                 }

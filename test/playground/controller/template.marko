@@ -1,0 +1,10 @@
+<div w-bind>
+    <button w-onClick="startScanning">Button</button>
+    <h2 if(data.barcode)>
+        ${data.barcode.Format}
+        :
+        ${data.barcode.Value}
+    </h2>
+
+    <barcode-reader w-id="reader" w-onReadBarCode="readBarCode"/>
+</div>

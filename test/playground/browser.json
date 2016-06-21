@@ -1,6 +1,6 @@
 {
   "dependencies": [
-    "../../src/barcode-reader",
+    "./controller",
     "styles.less"
   ]
 }

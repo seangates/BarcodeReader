@@ -1,6 +1,3 @@
-<div w-bind class="barcode-reader">
-  <if(data.streaming)>
-    <video w-id="video"></video>
-    <div class="guide-lines"></div>
-  </if>
+<div w-bind class="barcode-reader ${data.streaming ? 'streaming' : ''}">
+    <video w-id="video" if(data.streaming)></video>
 </div>
