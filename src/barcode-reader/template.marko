@@ -1,3 +1,6 @@
 <div w-bind class="barcode-reader">
-    <video w-id="video" if(data.streaming)></video>
+  <if(data.streaming)>
+    <video w-id="video"></video>
+    <div class="guide-lines"></div>
+  </if>
 </div>

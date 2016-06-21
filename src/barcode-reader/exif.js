@@ -1,3 +1,5 @@
+"use strict";
+
 (function() {
 
   var debug = false;
@@ -5,8 +7,12 @@
   var root = this;
 
   var EXIF = function(obj) {
-    if (obj instanceof EXIF) return obj;
-    if (!(this instanceof EXIF)) return new EXIF(obj);
+    if (obj instanceof EXIF){
+      return obj;
+    }
+    if (!(this instanceof EXIF)){
+      return new EXIF(obj);
+    }
     this.EXIFwrapped = obj;
   };
 
@@ -317,7 +323,8 @@
 
 
   function base64ToArrayBuffer(base64, contentType) {
-    contentType = contentType || base64.match(/^data\:([^\;]+)\;base64,/mi)[1] || ''; // e.g. 'data:image/jpeg;base64,...' => 'image/jpeg'
+    contentType = contentType || base64.match(/^data\:([^\;]+)\;base64,/mi)[1] || '';
+        // ↳ e.g. 'data:image/jpeg;base64,...' => 'image/jpeg'
     base64 = base64.replace(/^data\:([^\;]+)\;base64,/gmi, '');
     var binary = atob(base64);
     var len = binary.length;
@@ -333,12 +340,65 @@
     var http = new XMLHttpRequest();
     http.open("GET", url, true);
     http.responseType = "blob";
-    http.onload = function(e) {
-      if (this.status == 200 || this.status === 0) {
+    http.onload = function() {
+      if (this.status === 200 || this.status === 0) {
         callback(this.response);
+      }
+      else{
+        throw "Could not convert the URL to a blob";
       }
     };
     http.send();
+  }
+
+  function findEXIFinJPEG(file) {
+    var dataView = new DataView(file);
+
+    if (debug){
+      console.log("Got file of length " + file.byteLength);
+    }
+    if ((dataView.getUint8(0) !== 0xFF) || (dataView.getUint8(1) !== 0xD8)) {
+      if (debug){
+        console.log("Not a valid JPEG");
+      }
+      return false; // not a valid jpeg
+    }
+
+    var offset = 2,
+      length = file.byteLength,
+      marker;
+
+    while (offset < length) {
+      if (dataView.getUint8(offset) !== 0xFF) {
+        if (debug){
+          console.log("Not a valid marker at offset " + offset + ", found: " + dataView.getUint8(offset));
+        }
+        return false; // not a valid marker, something is wrong
+      }
+
+      marker = dataView.getUint8(offset + 1);
+      if (debug){
+        console.log(marker);
+      }
+
+      // we could implement handling for other markers here,
+      // but we're only looking for 0xFFE1 for EXIF data
+
+      if (marker === 225) {
+        if (debug){
+          console.log("Found 0xFFE1 marker");
+        }
+
+        return readEXIFData(dataView, offset + 4, dataView.getUint16(offset + 2) - 2);
+
+        // offset += 2 + file.getShortAt(offset+2, true);
+
+      } else {
+        offset += 2 + dataView.getUint16(offset + 2);
+      }
+
+    }
+
   }
 
   function getImageData(img, callback) {
@@ -368,7 +428,7 @@
       } else {
         var http = new XMLHttpRequest();
         http.onload = function() {
-          if (this.status == 200 || this.status === 0) {
+          if (this.status === 200 || this.status === 0) {
             handleBinaryFile(http.response);
           } else {
             throw "Could not load image";
@@ -381,7 +441,9 @@
       }
     } else if (window.FileReader && (img instanceof window.Blob || img instanceof window.File)) {
       fileReader.onload = function(e) {
-        if (debug) console.log("Got file of length " + e.target.result.byteLength);
+        if (debug){
+          console.log("Got file of length " + e.target.result.byteLength);
+        }
         handleBinaryFile(e.target.result);
       };
 
@@ -389,58 +451,23 @@
     }
   }
 
-  function findEXIFinJPEG(file) {
-    var dataView = new DataView(file);
 
-    if (debug) console.log("Got file of length " + file.byteLength);
-    if ((dataView.getUint8(0) != 0xFF) || (dataView.getUint8(1) != 0xD8)) {
-      if (debug) console.log("Not a valid JPEG");
-      return false; // not a valid jpeg
-    }
-
-    var offset = 2,
-      length = file.byteLength,
-      marker;
-
-    while (offset < length) {
-      if (dataView.getUint8(offset) != 0xFF) {
-        if (debug) console.log("Not a valid marker at offset " + offset + ", found: " + dataView.getUint8(offset));
-        return false; // not a valid marker, something is wrong
-      }
-
-      marker = dataView.getUint8(offset + 1);
-      if (debug) console.log(marker);
-
-      // we could implement handling for other markers here,
-      // but we're only looking for 0xFFE1 for EXIF data
-
-      if (marker == 225) {
-        if (debug) console.log("Found 0xFFE1 marker");
-
-        return readEXIFData(dataView, offset + 4, dataView.getUint16(offset + 2) - 2);
-
-        // offset += 2 + file.getShortAt(offset+2, true);
-
-      } else {
-        offset += 2 + dataView.getUint16(offset + 2);
-      }
-
-    }
-
-  }
 
   function findIPTCinJPEG(file) {
     var dataView = new DataView(file);
 
-    if (debug) console.log("Got file of length " + file.byteLength);
-    if ((dataView.getUint8(0) != 0xFF) || (dataView.getUint8(1) != 0xD8)) {
-      if (debug) console.log("Not a valid JPEG");
+    if (debug){
+      console.log("Got file of length " + file.byteLength);
+    }
+    if ((dataView.getUint8(0) !== 0xFF) || (dataView.getUint8(1) !== 0xD8)) {
+      if (debug){
+        console.log("Not a valid JPEG");
+      }
       return false; // not a valid jpeg
     }
 
     var offset = 2,
       length = file.byteLength;
-
 
     var isFieldSegmentStart = function(dataView, offset) {
       return (
@@ -459,7 +486,9 @@
 
         // Get the length of the name header (which is padded to an even number of bytes)
         var nameHeaderLength = dataView.getUint8(offset + 7);
-        if (nameHeaderLength % 2 !== 0) nameHeaderLength += 1;
+        if (nameHeaderLength % 2 !== 0){
+          nameHeaderLength += 1;
+        }
         // Check for pre photoshop 6 format
         if (nameHeaderLength === 0) {
           // Always 4
@@ -535,7 +564,9 @@
     for (i = 0; i < entries; i++) {
       entryOffset = dirStart + i * 12 + 2;
       tag = strings[file.getUint16(entryOffset, !bigEnd)];
-      if (!tag && debug) console.log("Unknown tag: " + file.getUint16(entryOffset, !bigEnd));
+      if (!tag && debug){
+        console.log("Unknown tag: " + file.getUint16(entryOffset, !bigEnd));
+      }
       tags[tag] = readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd);
     }
     return tags;
@@ -553,7 +584,7 @@
     switch (type) {
       case 1: // byte, 8-bit unsigned int
       case 7: // undefined, 8-bit byte, value depending on field
-        if (numValues == 1) {
+        if (numValues === 1) {
           return file.getUint8(entryOffset + 8, !bigEnd);
         } else {
           offset = numValues > 4 ? valueOffset : (entryOffset + 8);
@@ -569,7 +600,7 @@
         return getStringFromDB(file, offset, numValues - 1);
 
       case 3: // short, 16 bit int
-        if (numValues == 1) {
+        if (numValues === 1) {
           return file.getUint16(entryOffset + 8, !bigEnd);
         } else {
           offset = numValues > 2 ? valueOffset : (entryOffset + 8);
@@ -581,7 +612,7 @@
         }
         break;
       case 4: // long, 32 bit int
-        if (numValues == 1) {
+        if (numValues === 1) {
           return file.getUint32(entryOffset + 8, !bigEnd);
         } else {
           vals = [];
@@ -592,7 +623,7 @@
         }
         break;
       case 5: // rational = two long values, first is numerator, second is denominator
-        if (numValues == 1) {
+        if (numValues === 1) {
           numerator = file.getUint32(valueOffset, !bigEnd);
           denominator = file.getUint32(valueOffset + 4, !bigEnd);
           val = numerator / denominator;
@@ -612,7 +643,7 @@
         }
         break;
       case 9: // slong, 32 bit signed int
-        if (numValues == 1) {
+        if (numValues === 1) {
           return file.getInt32(entryOffset + 8, !bigEnd);
         } else {
           vals = [];
@@ -623,7 +654,7 @@
         }
         break;
       case 10: // signed rational, two slongs, first is numerator, second is denominator
-        if (numValues == 1) {
+        if (numValues === 1) {
           return file.getInt32(valueOffset, !bigEnd) / file.getInt32(valueOffset + 4, !bigEnd);
         } else {
           vals = [];
@@ -656,24 +687,30 @@
       tiffOffset = start + 6;
 
     // test for TIFF validity and endianness
-    if (file.getUint16(tiffOffset) == 0x4949) {
+    if (file.getUint16(tiffOffset) === 0x4949) {
       bigEnd = false;
-    } else if (file.getUint16(tiffOffset) == 0x4D4D) {
+    } else if (file.getUint16(tiffOffset) === 0x4D4D) {
       bigEnd = true;
     } else {
-      if (debug) console.log("Not valid TIFF data! (no 0x4949 or 0x4D4D)");
+      if (debug){
+        console.log("Not valid TIFF data! (no 0x4949 or 0x4D4D)");
+      }
       return false;
     }
 
-    if (file.getUint16(tiffOffset + 2, !bigEnd) != 0x002A) {
-      if (debug) console.log("Not valid TIFF data! (no 0x002A)");
+    if (file.getUint16(tiffOffset + 2, !bigEnd) !== 0x002A) {
+      if (debug){
+        console.log("Not valid TIFF data! (no 0x002A)");
+      }
       return false;
     }
 
     var firstIFDOffset = file.getUint32(tiffOffset + 4, !bigEnd);
 
     if (firstIFDOffset < 0x00000008) {
-      if (debug) console.log("Not valid TIFF data! (First offset less than 8)", file.getUint32(tiffOffset + 4, !bigEnd));
+      if (debug){
+        console.log("Not valid TIFF data! (First offset less than 8)", file.getUint32(tiffOffset + 4, !bigEnd));
+      }
       return false;
     }
 
