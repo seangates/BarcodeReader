@@ -1,0 +1,15 @@
+{
+  "dependencies": [
+    "require: jquery",
+    {
+      "path": "./DecoderWorker.js",
+      "mask-define": false
+    },
+    {
+      "path": "./BarcodeReader.js",
+      "mask-define": false
+    },
+    "style.less",
+    "require: ./"
+  ]
+}

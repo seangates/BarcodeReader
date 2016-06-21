@@ -1,0 +1,47 @@
+{
+  "name": "barcode-reader",
+  "version": "2.0.0",
+  "description": "A Marko JS widget (for eBayUI) using a pure JS barcode reader compatible with mobile browsers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test",
+    "demo": "browser-refresh ./test/playground"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:seangates/BarcodeReader.git"
+  },
+  "keywords": [
+    "node",
+    "barcode",
+    "barcode-reader",
+    "reader"
+  ],
+  "author": "eBay PD",
+  "maintainers": [
+    {
+      "name": "sgates",
+      "email": "sgates@ebay.com"
+    },
+    {
+      "name": "pecopeland",
+      "email": "pecopeland@ebay.com"
+    }
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.0.0",
+    "marko": "^3.0.3",
+    "marko-widgets": "^6.0.0"
+  },
+  "devDependencies": {
+    "express": "^4.14.0",
+    "fs-extra": "^0.24.0",
+    "glob": "^5.0.3",
+    "lasso": "^2.0.0",
+    "lasso-less": "^2",
+    "lasso-marko": "^2.0",
+    "lasso-require": "^3.0.1",
+    "serve-static": "^1.10.2"
+  }
+}
