@@ -1,18 +1,40 @@
+@keyframes laserBeam {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 100vh 0;
+    }
+}
+
 .barcode-reader {
-    &:after {
-        background-color: rgba(255, 0, 0, .1);
-        border: 3px solid white;
+    .box {
+        background-color: rgba(255, 0, 0, .05);
+        border: 3px dotted #fff;
         content: '';
-        display: none;
         height: 50vh;
         left: 50%;
+        overflow: hidden;
         position: fixed;
         top: 50%;
-        transform: translate(-50%, -50%) scale(-1, 1);
+        transform: translate(-50%, -50%);
         width: 70vh;
 
-        .streaming& {
-            display: block;
+        &:after {
+            animation-duration: 10ms;
+            animation-iteration-count: infinite;
+            animation-name: laserBeam;
+            animation-timing-function: linear;
+            background: radial-gradient(ellipse at 50% 50%, rgba(255, 0, 0, 1) 0%, rgba(255, 0, 0, 0) 50%, rgba(255, 0, 0, 0) 100%);
+            background-position: 0 0;
+            content: '';
+            height: 1vh;
+            left: 50%;
+            position: fixed;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vh;
+            z-index: 1;
         }
     }
 

@@ -30,18 +30,15 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "jquery": "^3.0.0",
     "marko": "^3.0.3",
     "marko-widgets": "^6.0.0"
   },
   "devDependencies": {
     "express": "^4.14.0",
-    "fs-extra": "^0.24.0",
-    "glob": "^5.0.3",
     "lasso": "^2.0.0",
+    "lasso-autoprefixer": "^2.0.0",
     "lasso-less": "^2",
     "lasso-marko": "^2.0",
-    "lasso-require": "^3.0.1",
     "serve-static": "^1.10.2"
   }
 }

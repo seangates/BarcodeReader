@@ -1,8 +1,8 @@
 {
   "dependencies": [
-    "require: jquery",
     "require: ./barcode-reader",
     "require: ./decoder-worker",
+    "require: ./exif",
     "style.less",
     "require: ./"
   ]

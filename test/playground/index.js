@@ -9,17 +9,18 @@ var testPage = require('./test-page.marko');
 
 lasso.configure({
     plugins: [
-        'lasso-less', // Allow Less files to be rendered to CSS
-        'lasso-marko', // Allow Marko templates to be compiled and transported to the browser
-        'lasso-require'
+        'lasso-less',
+        'lasso-marko',
+        'lasso-autoprefixer'
     ],
-    outputDir: __dirname + '/static', // Place all generated JS/CSS/etc. files into the "static" dir
-    bundlingEnabled: false, // Only enable bundling in production
-    minify: false, // Only minify JS and CSS code in production
-    fingerprintsEnabled: false // Only add fingerprints to URLs in production
+    outputDir: __dirname + '/static',
+    bundlingEnabled: false,
+    minify: false,
+    fingerprintsEnabled: false
 });
 
 var app = express();
+
 app.use('/static', serveStatic(__dirname + '/static'));
 app.get('/barcode-reader', function handler(req, res) {
     testPage.render({}, res);

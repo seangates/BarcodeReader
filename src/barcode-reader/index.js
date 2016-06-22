@@ -18,7 +18,6 @@ module.exports = require('marko-widgets').defineComponent({
     stream: null,
 
     init: function () {
-        console.log('asdasd');
         var BarcodeReader = require('./barcode-reader');
 
         this.BarcodeReader = new BarcodeReader({
